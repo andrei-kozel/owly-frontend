@@ -1,11 +1,56 @@
+<script setup lang="ts">
+import Logo from "~/components/Logo.vue";
+import LocalePicker from "~/components/buttons/LocalePicker.vue";
+import ColorModePicker from "~/components/buttons/ColorModePicker.vue";
+</script>
+
 <template>
-  <div class="flex h-screen bg-sky-300">
-    <aside class="w-16 p-2 fixed">Sidebar content</aside>
-    <div class="ml-16 flex flex-col w-full overflow-y-auto overflow-x-hidden">
+  <div class="flex h-screen">
+    <aside
+      class="w-20 p-2 fixed flex flex-col h-full items-center justify-between gap-4"
+    >
+      <div>
+        <div class="h-16 w-16">
+          <NuxtLink to="/app">
+            <Logo />
+          </NuxtLink>
+        </div>
+        <div class="relative">header</div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <NuxtLink
+          to="/app"
+          class="link w-10 h-10 hover:bg-background-700 text-text-700 hover:text-text-500 flex justify-center items-center rounded-lg"
+        >
+          <Icon name="uil:home" size="24" />
+        </NuxtLink>
+        <NuxtLink
+          to="/app/settings"
+          class="link w-10 h-10 hover:bg-background-700 text-text-700 hover:text-text-500 flex justify-center items-center rounded-lg"
+        >
+          <Icon name="uil:setting" size="24" />
+        </NuxtLink>
+      </div>
+      <div class="justify-baseline flex flex-col gap-2">
+        <ColorModePicker />
+        <LocalePicker />
+      </div>
+    </aside>
+    <div class="ml-20 flex flex-col w-full overflow-y-auto overflow-x-hidden">
       <header class="fixed h-16 p-2">Header content</header>
-      <div class="mt-16 bg-red-300 rounded-tl-xl p-4 flex-1">
+      <div class="mt-17 bg-background-50 rounded-tl-xl p-4 flex-1">
         <slot />
       </div>
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.link {
+  cursor: pointer;
+}
+
+.router-link-active {
+  background-color: var(--background-200);
+}
+</style>
