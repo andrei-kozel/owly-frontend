@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+#app {
+  background-color: wheat;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+}
