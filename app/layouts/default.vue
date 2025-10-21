@@ -2,6 +2,7 @@
 import Logo from "~/components/Logo.vue";
 import LocalePicker from "~/components/buttons/LocalePicker.vue";
 import ColorModePicker from "~/components/buttons/ColorModePicker.vue";
+const localePath = useLocalePath();
 </script>
 
 <template>
@@ -11,7 +12,7 @@ import ColorModePicker from "~/components/buttons/ColorModePicker.vue";
     >
       <div>
         <div class="h-16 w-16">
-          <NuxtLink to="/app">
+          <NuxtLink :to="localePath('/app')">
             <Logo />
           </NuxtLink>
         </div>
@@ -19,13 +20,13 @@ import ColorModePicker from "~/components/buttons/ColorModePicker.vue";
       </div>
       <div class="flex flex-col gap-2">
         <NuxtLink
-          to="/app"
+          :to="localePath('/app')"
           class="link w-10 h-10 hover:bg-background-700 text-text-700 hover:text-text-500 flex justify-center items-center rounded-lg"
         >
           <Icon name="uil:home" size="24" />
         </NuxtLink>
         <NuxtLink
-          to="/app/settings"
+          :to="localePath('/app/settings')"
           class="link w-10 h-10 hover:bg-background-700 text-text-700 hover:text-text-500 flex justify-center items-center rounded-lg"
         >
           <Icon name="uil:setting" size="24" />
