@@ -2,6 +2,8 @@
   "toggleColorMode": "Переключить тему",
   "menu": {
     "home": "Главная",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "login": "Войти",
+    "logout": "Выйти"
   }
 }

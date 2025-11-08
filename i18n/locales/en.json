@@ -2,6 +2,8 @@
   "toggleColorMode": "Toggle color mode",
   "menu": {
     "home": "Home",
-    "settings": "Settings"
+    "settings": "Settings",
+    "login": "Login",
+    "logout": "Logout"
   }
 }

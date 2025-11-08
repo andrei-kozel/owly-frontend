@@ -94,7 +94,7 @@ const handleLogout = async () => {
             <p class="text-xs text-text-600">{{ user.email }}</p>
           </div>
           <Button @click="handleLogout" variant="outline" size="sm">
-            Logout
+            {{ $t("menu.logout") }}
           </Button>
         </div>
 
@@ -105,7 +105,7 @@ const handleLogout = async () => {
           icon="uil:signin"
           variant="primary"
         >
-          Login
+          {{ $t("menu.login") }}
         </Button>
       </header>
       <div class="bg-background-50 rounded-tl-xl p-4 flex-1 overflow-y-auto">
