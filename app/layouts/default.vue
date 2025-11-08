@@ -2,9 +2,25 @@
 import Logo from "~/components/Logo.vue";
 import LocalePicker from "~/components/buttons/LocalePicker.vue";
 import ColorModePicker from "~/components/buttons/ColorModePicker.vue";
+import Button from "~/components/buttons/Button.vue";
 import { mainNavigation } from "~/config/navigation";
+import { Dialog } from "~/composables/useDialog";
+import LoginDialog from "~/components/dialogs/LoginDialog.vue";
 
 const localePath = useLocalePath();
+
+const openLoginDialog = () => {
+  Dialog.New(
+    LoginDialog,
+    {
+      title: "Welcome Back",
+      message: "Please sign in to continue",
+    },
+    () => {
+      console.log("Dialog closed");
+    }
+  );
+};
 </script>
 
 <template>
@@ -48,9 +64,13 @@ const localePath = useLocalePath();
         <LocalePicker />
       </div>
     </aside>
-    <div class="ml-20 flex flex-col w-full overflow-y-auto overflow-x-hidden">
-      <header class="fixed h-16 p-2">Header content</header>
-      <div class="mt-17 bg-background-50 rounded-tl-xl p-4 flex-1">
+    <div class="ml-20 flex flex-col w-full h-screen">
+      <header class="h-16 p-2 flex justify-end items-center shrink-0">
+        <Button @click="openLoginDialog" icon="uil:signin" variant="primary">
+          Login
+        </Button>
+      </header>
+      <div class="bg-background-50 rounded-tl-xl p-4 flex-1 overflow-y-auto">
         <slot />
       </div>
     </div>
