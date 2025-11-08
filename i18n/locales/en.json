@@ -1,3 +1,7 @@
 {
-  "toggleColorMode": "Toggle color mode"
+  "toggleColorMode": "Toggle color mode",
+  "menu": {
+    "home": "Home",
+    "settings": "Settings"
+  }
 }

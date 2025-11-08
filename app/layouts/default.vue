@@ -19,18 +19,37 @@ const localePath = useLocalePath();
         <div class="relative">header</div>
       </div>
       <div class="flex flex-col gap-2">
-        <NuxtLink
-          :to="localePath('/app')"
-          class="link w-10 h-10 hover:bg-background-700 text-text-700 hover:text-text-500 flex justify-center items-center rounded-lg"
-        >
-          <Icon name="uil:home" size="24" />
-        </NuxtLink>
-        <NuxtLink
-          :to="localePath('/app/settings')"
-          class="link w-10 h-10 hover:bg-background-700 text-text-700 hover:text-text-500 flex justify-center items-center rounded-lg"
-        >
-          <Icon name="uil:setting" size="24" />
-        </NuxtLink>
+        <Tooltip trigger="hover" placement="right" :offset="16">
+          <template #trigger>
+            <NuxtLink
+              :to="localePath('/app')"
+              class="link w-10 h-10 hover:bg-background-300 text-text-700 flex justify-center items-center rounded-lg"
+            >
+              <Icon name="uil:home" size="24" />
+            </NuxtLink>
+          </template>
+          <template #content>
+            <div class="p-2 text-sm text-text-900">
+              {{ $t("menu.home") }}
+            </div>
+          </template>
+        </Tooltip>
+
+        <Tooltip trigger="hover" placement="right" :offset="16">
+          <template #trigger>
+            <NuxtLink
+              :to="localePath('/app/settings')"
+              class="link w-10 h-10 hover:bg-background-300 text-text-700 flex justify-center items-center rounded-lg"
+            >
+              <Icon name="uil:setting" size="24" />
+            </NuxtLink>
+          </template>
+          <template #content>
+            <div class="p-2 text-sm text-text-900">
+              {{ $t("menu.settings") }}
+            </div>
+          </template>
+        </Tooltip>
       </div>
       <div class="justify-baseline flex flex-col gap-2">
         <ColorModePicker />

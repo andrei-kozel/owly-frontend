@@ -1,7 +1,7 @@
 <template>
   <button
     @click="toggleDarkMode"
-    class="w-12 h-12 flex justify-center items-center cursor-pointer text-text-700 hover:text-text-200 hover:bg-background-600 rounded-lg transition-colors"
+    class="w-12 h-12 flex justify-center items-center cursor-pointer text-text-700 hover:bg-background-300 rounded-lg transition-colors"
     aria-label="Toggle color mode"
     :title="$t('toggleColorMode')"
   >

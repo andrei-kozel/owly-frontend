@@ -1,3 +1,7 @@
 {
-  "toggleColorMode": "Переключить тему"
+  "toggleColorMode": "Переключить тему",
+  "menu": {
+    "home": "Главная",
+    "settings": "Настройки"
+  }
 }
