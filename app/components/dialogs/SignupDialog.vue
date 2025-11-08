@@ -7,36 +7,67 @@ import Button from "~/components/buttons/Button.vue";
 interface Props {
   title?: string;
   message?: string;
-  onSwitchToSignup?: () => void;
+  onSwitchToLogin?: () => void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  title: "Login",
-  message: "Please enter your credentials",
+  title: "Sign Up",
+  message: "Create your account",
 });
 
 const emit = defineEmits<{
   close: [];
-  switchToSignup: [];
+  switchToLogin: [];
 }>();
 
-const { login, isLoading, error, clearError } = useAuth();
+const { register, isLoading, error, clearError } = useAuth();
 
 const formData = ref({
+  name: "",
   email: "",
   password: "",
+  confirmPassword: "",
 });
+
+const validationError = ref<string | null>(null);
 
 const handleClose = () => {
   clearError();
+  validationError.value = null;
   emit("close");
+};
+
+const validateForm = (): boolean => {
+  validationError.value = null;
+
+  if (formData.value.name.length < 2) {
+    validationError.value = "Name must be at least 2 characters";
+    return false;
+  }
+
+  if (formData.value.password.length < 6) {
+    validationError.value = "Password must be at least 6 characters";
+    return false;
+  }
+
+  if (formData.value.password !== formData.value.confirmPassword) {
+    validationError.value = "Passwords do not match";
+    return false;
+  }
+
+  return true;
 };
 
 const handleSubmit = async () => {
   clearError();
 
+  if (!validateForm()) {
+    return;
+  }
+
   try {
-    await login({
+    await register({
+      name: formData.value.name,
       email: formData.value.email,
       password: formData.value.password,
     });
@@ -45,11 +76,11 @@ const handleSubmit = async () => {
     handleClose();
   } catch (err) {
     // Error is handled by useAuth composable
-    console.error("Login failed:", err);
+    console.error("Registration failed:", err);
   }
 };
 
-const handleTwitchLogin = () => {
+const handleTwitchSignup = () => {
   clearError();
   const twitchAuthUrl = getOAuthUrl("twitch");
 
@@ -61,10 +92,10 @@ const handleTwitchLogin = () => {
   }
 };
 
-const switchToSignup = () => {
+const switchToLogin = () => {
   handleClose();
-  if (props.onSwitchToSignup) {
-    props.onSwitchToSignup();
+  if (props.onSwitchToLogin) {
+    props.onSwitchToLogin();
   }
 };
 </script>
@@ -89,22 +120,27 @@ const switchToSignup = () => {
 
       <!-- Error Message -->
       <div
-        v-if="error"
+        v-if="error || validationError"
         class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
       >
-        {{ error }}
-      </div>
-
-      <!-- Demo Credentials -->
-      <div
-        class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm"
-      >
-        <p class="font-medium text-blue-900 mb-1">Demo Credentials:</p>
-        <p class="text-blue-700">Email: demo@example.com</p>
-        <p class="text-blue-700">Password: password123</p>
+        {{ error || validationError }}
       </div>
 
       <form @submit.prevent="handleSubmit" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-text-900 mb-1">
+            Name
+          </label>
+          <input
+            v-model="formData.name"
+            type="text"
+            required
+            :disabled="isLoading"
+            class="w-full px-3 py-2 border border-background-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="Enter your name"
+          />
+        </div>
+
         <div>
           <label class="block text-sm font-medium text-text-900 mb-1">
             Email
@@ -130,6 +166,24 @@ const switchToSignup = () => {
             :disabled="isLoading"
             class="w-full px-3 py-2 border border-background-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             placeholder="Enter your password"
+            minlength="6"
+          />
+          <p class="text-xs text-text-600 mt-1">
+            Must be at least 6 characters
+          </p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-text-900 mb-1">
+            Confirm Password
+          </label>
+          <input
+            v-model="formData.confirmPassword"
+            type="password"
+            required
+            :disabled="isLoading"
+            class="w-full px-3 py-2 border border-background-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="Confirm your password"
           />
         </div>
 
@@ -144,7 +198,7 @@ const switchToSignup = () => {
             Cancel
           </Button>
           <Button type="submit" variant="primary" :loading="isLoading">
-            Login
+            Sign Up
           </Button>
         </div>
       </form>
@@ -156,7 +210,7 @@ const switchToSignup = () => {
         </div>
         <div class="relative flex justify-center text-sm">
           <span class="px-2 bg-background-100 text-text-600"
-            >Or continue with</span
+            >Or sign up with</span
           >
         </div>
       </div>
@@ -164,27 +218,27 @@ const switchToSignup = () => {
       <!-- OAuth Buttons -->
       <div class="space-y-3">
         <Button
-          @click="handleTwitchLogin"
+          @click="handleTwitchSignup"
           variant="outline"
           :full-width="true"
           :disabled="isLoading"
           class="!border-purple-500 !text-purple-500 hover:!bg-purple-50"
         >
           <Icon name="mdi:twitch" size="20" class="mr-2" />
-          Login with Twitch
+          Sign up with Twitch
         </Button>
       </div>
 
-      <!-- Switch to Signup -->
+      <!-- Switch to Login -->
       <div class="mt-4 text-center">
         <p class="text-sm text-text-600">
-          Don't have an account?
+          Already have an account?
           <button
-            @click="switchToSignup"
+            @click="switchToLogin"
             class="text-primary-500 hover:text-primary-600 font-medium cursor-pointer"
             type="button"
           >
-            Sign up
+            Login
           </button>
         </p>
       </div>

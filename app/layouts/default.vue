@@ -6,20 +6,41 @@ import Button from "~/components/buttons/Button.vue";
 import { mainNavigation } from "~/config/navigation";
 import { Dialog } from "~/composables/useDialog";
 import LoginDialog from "~/components/dialogs/LoginDialog.vue";
+import SignupDialog from "~/components/dialogs/SignupDialog.vue";
+import { useAuth } from "~/composables/useAuth";
+import { h } from "vue";
 
 const localePath = useLocalePath();
+const { user, isAuthenticated, logout } = useAuth();
 
 const openLoginDialog = () => {
   Dialog.New(
-    LoginDialog,
-    {
+    h(LoginDialog, {
       title: "Welcome Back",
       message: "Please sign in to continue",
-    },
-    () => {
-      console.log("Dialog closed");
-    }
+      onSwitchToSignup: () => {
+        openSignupDialog();
+      },
+    }),
+    {}
   );
+};
+
+const openSignupDialog = () => {
+  Dialog.New(
+    h(SignupDialog, {
+      title: "Create Account",
+      message: "Sign up to get started",
+      onSwitchToLogin: () => {
+        openLoginDialog();
+      },
+    }),
+    {}
+  );
+};
+
+const handleLogout = async () => {
+  await logout();
 };
 </script>
 
@@ -65,8 +86,25 @@ const openLoginDialog = () => {
       </div>
     </aside>
     <div class="ml-20 flex flex-col w-full h-screen">
-      <header class="h-16 p-2 flex justify-end items-center shrink-0">
-        <Button @click="openLoginDialog" icon="uil:signin" variant="primary">
+      <header class="h-16 p-2 flex justify-end items-center gap-4 shrink-0">
+        <!-- User Info when authenticated -->
+        <div v-if="isAuthenticated && user" class="flex items-center gap-3">
+          <div class="text-right">
+            <p class="text-sm font-medium text-text-900">{{ user.name }}</p>
+            <p class="text-xs text-text-600">{{ user.email }}</p>
+          </div>
+          <Button @click="handleLogout" variant="outline" size="sm">
+            Logout
+          </Button>
+        </div>
+
+        <!-- Login button when not authenticated -->
+        <Button
+          v-else
+          @click="openLoginDialog"
+          icon="uil:signin"
+          variant="primary"
+        >
           Login
         </Button>
       </header>
