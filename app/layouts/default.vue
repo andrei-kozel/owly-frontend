@@ -2,6 +2,8 @@
 import Logo from "~/components/Logo.vue";
 import LocalePicker from "~/components/buttons/LocalePicker.vue";
 import ColorModePicker from "~/components/buttons/ColorModePicker.vue";
+import { mainNavigation } from "~/config/navigation";
+
 const localePath = useLocalePath();
 </script>
 
@@ -19,34 +21,24 @@ const localePath = useLocalePath();
         <div class="relative">header</div>
       </div>
       <div class="flex flex-col gap-2">
-        <Tooltip trigger="hover" placement="right" :offset="16">
+        <Tooltip
+          v-for="item in mainNavigation"
+          :key="item.to"
+          trigger="hover"
+          placement="right"
+          :offset="16"
+        >
           <template #trigger>
             <NuxtLink
-              :to="localePath('/app')"
+              :to="localePath(item.to)"
               class="link w-10 h-10 hover:bg-background-300 text-text-700 flex justify-center items-center rounded-lg"
             >
-              <Icon name="uil:home" size="24" />
+              <Icon :name="item.icon" size="24" />
             </NuxtLink>
           </template>
           <template #content>
             <div class="p-2 text-sm text-text-900">
-              {{ $t("menu.home") }}
-            </div>
-          </template>
-        </Tooltip>
-
-        <Tooltip trigger="hover" placement="right" :offset="16">
-          <template #trigger>
-            <NuxtLink
-              :to="localePath('/app/settings')"
-              class="link w-10 h-10 hover:bg-background-300 text-text-700 flex justify-center items-center rounded-lg"
-            >
-              <Icon name="uil:setting" size="24" />
-            </NuxtLink>
-          </template>
-          <template #content>
-            <div class="p-2 text-sm text-text-900">
-              {{ $t("menu.settings") }}
+              {{ $t(item.label) }}
             </div>
           </template>
         </Tooltip>
