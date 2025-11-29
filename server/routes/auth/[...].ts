@@ -1,17 +1,44 @@
-import { defineEventHandler, proxyRequest } from "h3";
+import {
+  defineEventHandler,
+  setResponseStatus,
+  setResponseHeader,
+  getRequestHeaders,
+} from "h3";
 
 export default defineEventHandler(async (event) => {
-  // Skip if it's the login initiation route which is handled by [provider].get.ts
-  // But [provider].get.ts only handles /auth/:provider
-  // This catch-all handles /auth/me, /auth/logout, /auth/:provider/callback
-
   const apiUrl = process.env.API_URL || "http://localhost:3030";
-  // event.path includes the full path e.g. /auth/twitch/callback
   const target = `${apiUrl}${event.path}`;
 
-  return proxyRequest(event, target, {
-    fetchOptions: {
-      redirect: "manual", // Important: pass redirects back to the browser
-    },
-  });
+  try {
+    const headers = new Headers();
+    const reqHeaders = getRequestHeaders(event);
+    for (const [key, value] of Object.entries(reqHeaders)) {
+      if (key === "host") continue;
+      if (value) headers.append(key, value as string);
+    }
+
+    // @ts-ignore
+    const response = await fetch(target, {
+      headers: headers,
+      method: event.method,
+      redirect: "manual",
+    });
+
+    setResponseStatus(event, response.status);
+
+    // Copy headers
+    response.headers.forEach((value, key) => {
+      // Skip content-encoding/length as we might change body
+      if (key === "content-encoding" || key === "content-length") return;
+      setResponseHeader(event, key, value);
+    });
+
+    const body = await response.text();
+
+    return body;
+  } catch (error) {
+    console.error("[Proxy] Error:", error);
+    setResponseStatus(event, 500);
+    return "Proxy Error: " + error;
+  }
 });

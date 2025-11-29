@@ -23,15 +23,20 @@ export const useAuth = () => {
    */
   const fetchUser = async () => {
     try {
-      const userData = await $fetch<User>("/auth/me");
-      user.value = userData;
+      const data = await $fetch<any>("/auth/me");
+      if (data) {
+        user.value = {
+          id: data.user_id,
+          email: data.Email,
+          name: data.DisplayName,
+          role: data.roles && data.roles.length > 0 ? data.roles[0] : "user",
+          avatarUrl: data.AvatarURL,
+        };
+      }
     } catch (e) {
+      console.error("Failed to fetch user:", e);
       // Not authenticated or error
-      // Don't clear user if we have it from localStorage?
-      // Actually, if /auth/me fails, we probably aren't validly logged in via cookie.
-      // But we might be via JWT in header?
-      // The current implementation of /auth/me checks cookie.
-      // If we use JWT, we should probably attach it to the request.
+      user.value = null;
     }
   };
 
@@ -149,7 +154,9 @@ export const useAuth = () => {
     error.value = null;
 
     try {
-      await authService.logout();
+      // Call backend logout to clear cookie
+      await $fetch("/auth/logout", { method: "POST" });
+
       clearAuth();
 
       // Redirect to home or login page
