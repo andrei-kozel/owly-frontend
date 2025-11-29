@@ -44,4 +44,8 @@ export default defineNuxtConfig({
     preference: "system",
     fallback: "dark",
   },
+
+  routeRules: {
+    // Auth routes are handled by server/routes/auth
+  },
 });

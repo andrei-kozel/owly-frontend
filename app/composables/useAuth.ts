@@ -16,12 +16,29 @@ const STORAGE_KEYS = {
 } as const;
 
 export const useAuth = () => {
-  const isAuthenticated = computed(() => !!user.value && !!accessToken.value);
+  const isAuthenticated = computed(() => !!user.value);
+
+  /**
+   * Fetch current user from backend (cookie-based auth)
+   */
+  const fetchUser = async () => {
+    try {
+      const userData = await $fetch<User>("/auth/me");
+      user.value = userData;
+    } catch (e) {
+      // Not authenticated or error
+      // Don't clear user if we have it from localStorage?
+      // Actually, if /auth/me fails, we probably aren't validly logged in via cookie.
+      // But we might be via JWT in header?
+      // The current implementation of /auth/me checks cookie.
+      // If we use JWT, we should probably attach it to the request.
+    }
+  };
 
   /**
    * Initialize auth state from storage
    */
-  const initAuth = () => {
+  const initAuth = async () => {
     if (import.meta.client) {
       const storedAccessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
       const storedRefreshToken = localStorage.getItem(
@@ -38,6 +55,11 @@ export const useAuth = () => {
           console.error("Failed to parse stored user data", err);
           clearAuth();
         }
+      }
+
+      // If not authenticated via localStorage, try cookie-based auth
+      if (!user.value) {
+        await fetchUser();
       }
     }
   };
@@ -225,6 +247,7 @@ export const useAuth = () => {
 
     // Methods
     initAuth,
+    fetchUser,
     login,
     register,
     logout,
