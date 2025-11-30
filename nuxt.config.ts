@@ -46,6 +46,11 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    "/api/provider/**": {
+      proxy: `${
+        process.env.API_URL || "http://localhost:3030"
+      }/api/provider/**`,
+    },
     // Auth routes are handled by server/routes/auth
   },
 });

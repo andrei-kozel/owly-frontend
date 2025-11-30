@@ -2,6 +2,7 @@ import {
   defineEventHandler,
   setResponseStatus,
   setResponseHeader,
+  appendResponseHeader,
   getRequestHeaders,
 } from "h3";
 
@@ -17,7 +18,6 @@ export default defineEventHandler(async (event) => {
       if (value) headers.append(key, value as string);
     }
 
-    // @ts-ignore
     const response = await fetch(target, {
       headers: headers,
       method: event.method,
@@ -26,12 +26,22 @@ export default defineEventHandler(async (event) => {
 
     setResponseStatus(event, response.status);
 
-    // Copy headers
     response.headers.forEach((value, key) => {
-      // Skip content-encoding/length as we might change body
       if (key === "content-encoding" || key === "content-length") return;
-      setResponseHeader(event, key, value);
+
+      if (key === "set-cookie") {
+        appendResponseHeader(event, key, value);
+      } else {
+        setResponseHeader(event, key, value);
+      }
     });
+
+    if (typeof response.headers.getSetCookie === "function") {
+      const cookies = response.headers.getSetCookie();
+      if (cookies && cookies.length > 0) {
+        setResponseHeader(event, "set-cookie", cookies);
+      }
+    }
 
     const body = await response.text();
 

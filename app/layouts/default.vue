@@ -8,10 +8,12 @@ import { Dialog } from "~/composables/useDialog";
 import LoginDialog from "~/components/dialogs/LoginDialog.vue";
 import SignupDialog from "~/components/dialogs/SignupDialog.vue";
 import { useAuth } from "~/composables/useAuth";
+import { useBot } from "~/composables/useBot";
 import { h } from "vue";
 
 const localePath = useLocalePath();
 const { user, isAuthenticated, logout } = useAuth();
+const { twitchData } = useBot();
 
 const openLoginDialog = () => {
   Dialog.New(
@@ -91,7 +93,15 @@ const handleLogout = async () => {
         <div v-if="isAuthenticated && user" class="flex items-center gap-3">
           <div class="text-right">
             <p class="text-sm font-medium text-text-900">{{ user.name }}</p>
-            <p class="text-xs text-text-600">{{ user.email }}</p>
+
+            <div
+              v-if="twitchData"
+              class="flex items-center justify-end gap-1 text-xs text-text-600"
+            >
+              <Icon name="mdi:twitch" class="text-purple-500" />
+              <span>{{ twitchData.view_count }} viewers</span>
+            </div>
+            <p v-else class="text-xs text-text-600">{{ user.email }}</p>
           </div>
           <Button @click="handleLogout" variant="outline" size="sm">
             {{ $t("menu.logout") }}
